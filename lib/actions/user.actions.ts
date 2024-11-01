@@ -1,12 +1,12 @@
 "use server"
 
 import { plaidClient } from "@/lib/plaid"
+import { revalidatePath } from "next/cache"
 import { cookies } from "next/headers"
-import { Account, Client, ID, Models, Query } from "node-appwrite"
+import { ID, Models, Query } from "node-appwrite"
 import { CountryCode, ProcessorTokenCreateRequest, ProcessorTokenCreateRequestProcessorEnum, Products } from "plaid"
 import { createAdminClient, createSessionClient } from "../appwrite"
 import { encryptId, extractCustomerIdFromUrl, parseStringify } from "../utils"
-import { revalidatePath } from "next/cache"
 import { addFundingSource, createDwollaCustomer } from "./dwolla.actions"
 
 const {
@@ -150,7 +150,7 @@ export const createLinkToken = async (user: User) => {
                 client_user_id: user?.$id as string,
             },
             client_name: `${user.firstName} ${user.lastName}`,
-            products: ["auth"] as Products[],
+            products: ["auth", "transactions"] as Products[],
             language: "en",
             country_codes: ["US"] as CountryCode[],
         }
@@ -205,7 +205,7 @@ export const exchangePublicToken = async ({
             public_token: publicToken,
         });
 
-        const accessToken = response.data.access_token;
+        const accessToken = response.data?.access_token;
         const itemId = response.data.item_id;
 
         // Get account information from Plaid using the access token
