@@ -3,7 +3,7 @@ import RecentTransactions from "@/components/RecentTransactions";
 import RightSidebar from "@/components/RightSidebar";
 import TotalBalanceBox from "@/components/TotalBalanceBox";
 import { getAccount, getAccounts } from "@/lib/actions/bank.actions";
-import { getLoggedInUser } from "@/lib/actions/user.actions";
+import { exchangePublicToken, getLoggedInUser } from "@/lib/actions/user.actions";
 import { redirect } from "next/navigation";
 import React from "react";
 
@@ -14,7 +14,7 @@ const Home = async ({ searchParams: { id, page } }: SearchParamProps) => {
     // if(!loggedIn) return <div>Please login to access home page</div>
     if(!loggedIn) redirect("/sign-in")
     const accounts = await getAccounts({userId: loggedIn?.$id!});
-    if(!accounts) return ;
+    // if(!accounts) return;
     const accountsData = accounts?.data;
     const appwriteItemId = (id as string) || accountsData[0]?.appwriteItemId;
     const account = await getAccount({appwriteItemId})
